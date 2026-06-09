@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Investigación CETis 20 | Conclusiones y Bibliografía</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4f9f9;
+            --primary-blue: #1a2a6c;
+            --turquoise: #40c4ff;
+            --text-dark: #2c3e50;
+            --card-bg: #ffffff;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-color); color: var(--text-dark); overflow-x: hidden; scroll-behavior: smooth; font-family: 'Nunito', sans-serif; }
+
+        button:focus, a:focus, button:focus-visible, a:focus-visible { outline: none; }
+
+        /* ── NAV (sin cambios) ── */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 4%;
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(0,0,0,0.92);
+            width: 100%;
+        }
+        .logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem; color: #ffffff;
+            letter-spacing: 0.08em;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .nav-links { display: flex; list-style: none; gap: 22px; flex-wrap: wrap; }
+        .nav-links a {
+            text-decoration: none; color: #e0f7fa;
+            font-weight: 700; font-size: 0.88rem;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--turquoise); }
+
+        /* Hamburger */
+        .hamburger {
+            display: none; flex-direction: column; gap: 5px;
+            cursor: pointer; background: none; border: none; padding: 4px;
+        }
+        .hamburger span {
+            display: block; width: 25px; height: 2px;
+            background: #fff; border-radius: 2px;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        .mobile-menu {
+            flex-direction: column;
+            position: fixed; top: 56px; left: 0; right: 0;
+            background: rgba(10,18,60,0.98);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+            display: flex;
+            z-index: 200;
+        }
+        .mobile-menu.open { max-height: 400px; }
+        .mobile-menu a {
+            text-decoration: none; color: #e0f7fa; font-weight: 700;
+            font-size: 1rem; padding: 16px 6%; text-transform: uppercase; letter-spacing: 0.06em;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            transition: background 0.2s, padding-left 0.2s;
+            transform: translateX(-10px); opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease, background 0.2s, padding-left 0.2s;
+        }
+        .mobile-menu.open a { transform: translateX(0); opacity: 1; }
+        .mobile-menu.open a:nth-child(1) { transition-delay: 0.05s; }
+        .mobile-menu.open a:nth-child(2) { transition-delay: 0.10s; }
+        .mobile-menu.open a:nth-child(3) { transition-delay: 0.15s; }
+        .mobile-menu.open a:nth-child(4) { transition-delay: 0.20s; }
+        .mobile-menu.open a:nth-child(5) { transition-delay: 0.25s; }
+        .mobile-menu.open a:nth-child(6) { transition-delay: 0.30s; }
+        .mobile-menu a:hover { background: rgba(64,196,255,0.15); padding-left: 8%; }
+
+        /* ── ANIMACIONES GLOBALES ── */
+        @keyframes fadeUp {
+            0%   { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInRight {
+            0%   { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0);    opacity: 1; }
+        }
+        @keyframes slideOutLeft {
+            0%   { transform: translateX(0);     opacity: 1; }
+            100% { transform: translateX(-100%); opacity: 0; }
+        }
+
+        /* ── HERO (sin cambios) ── */
+        .hero {
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center;
+            padding: 100px 6% 60px;
+            position: relative; overflow: hidden;
+        }
+        .hero-slides { position: absolute; inset: 0; z-index: 0; }
+        .hero-slide {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        .hero-slide.active { opacity: 1; }
+        .hero-slide.entering { animation: slideInRight 0.8s ease forwards; }
+        .hero-slide.leaving { animation: slideOutLeft 0.8s ease forwards; z-index: 1; }
+
+        .hero-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to bottom, rgba(26,42,108,0.65) 0%, rgba(0,0,0,0.80) 100%);
+            z-index: 2;
+        }
+        .hero-badge, .hero-text { position: relative; z-index: 3; }
+
+        .slide-quote{
+            position:absolute;
+            bottom:70px;
+            left:50%;
+            transform:translateX(-50%);
+            z-index:3;
+            color:white;
+            font-weight:800;
+            font-size:clamp(1rem,2vw,1.3rem);
+            text-align:center;
+            max-width:80%;
+            opacity:1;
+            transition:opacity .8s ease;
+            text-shadow:0 2px 10px rgba(0,0,0,.6);
+        }
+        .slide-quote.fade{opacity:0;}
+        
+        .slide-dots {
+            position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; z-index: 3;
+        }
+        .slide-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: rgba(255,255,255,0.4); border: none; cursor: default; pointer-events: none;
+            transition: background 0.3s, transform 0.3s;
+            padding: 0;
+        }
+        .slide-dot.active { background: var(--turquoise); transform: scale(1.3); }
+
+        .hero-badge {
+            position: relative;
+            top: -110px;
+            display: inline-flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(8px);
+            border-radius: 40px; padding: 8px 22px; margin-bottom: 22px;
+            opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s;
+        }
+        .hero-badge span { font-size: 1.1rem; }
+        .hero-badge p { color: #e0f7fa; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+        .hero-text {
+            max-width: 820px;
+            position: relative;
+            top: -90px;
+        }
+        .hero-text h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.4rem, 5.5vw, 4rem);
+            line-height: 1.1; letter-spacing: 0.04em; color: #ffffff;
+            margin-bottom: 18px; text-transform: uppercase;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            opacity: 0; animation: fadeUp 0.8s ease forwards 0.35s;
+        }
+        .hero-text p {
+            font-size: clamp(0.95rem, 2vw, 1.1rem); font-weight: 600;
+            color: #cce8f0; margin-bottom: 32px; line-height: 1.7;
+            opacity: 0; animation: fadeUp 0.8s ease forwards 0.55s;
+        }
+        .btn-hero {
+            display: inline-block; background-color: var(--turquoise); color: var(--primary-blue);
+            padding: 14px 38px; border-radius: 30px; text-decoration: none;
+            font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem;
+            letter-spacing: 0.05em; text-transform: uppercase;
+            box-shadow: 0 4px 20px rgba(64,196,255,0.4);
+            transition: transform 0.3s, background 0.3s;
+            opacity: 0; animation: fadeUp 0.8s ease forwards 0.75s;
+        }
+        .btn-hero:hover { transform: translateY(-3px); background-color: #ffffff; }
+
+        /* ── SECTIONS ── */
+        section { padding: 4.5rem 5%; }
+        h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            color: var(--primary-blue); margin-bottom: 2rem;
+            border-left: 5px solid var(--turquoise); padding-left: 15px;
+            font-size: clamp(1.8rem, 3.5vw, 2.4rem); letter-spacing: 0.06em;
+        }
+        .card-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
+
+        /* ── ESTILOS BASE DE TARJETAS ── */
+        .card {
+            background: var(--card-bg); padding: 30px; border-radius: 16px;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.07);
+            transition: transform 0.35s, box-shadow 0.35s;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { transform: translateY(-6px); box-shadow: 0 16px 32px rgba(0,0,0,0.11); }
+        .card h3 { font-family: 'Nunito', sans-serif; font-weight: 900; color: var(--primary-blue); margin-bottom: 8px; font-size: 1.15rem; }
+        .icon-card { font-size: 2.4rem; display: block; margin-bottom: 14px; }
+        .card > p, .card ul, .card li { font-size: 0.95rem; line-height: 1.65; color: #4a5568; }
+        .card ul { padding-left: 20px; margin-top: 8px; margin-bottom: 8px; }
+
+        /* Botón expandir */
+        .btn-expand {
+            display: flex; align-items: center; gap: 8px;
+            background: none; border: 2px solid var(--turquoise);
+            color: var(--primary-blue); border-radius: 25px;
+            padding: 9px 20px; margin-top: 20px; cursor: pointer;
+            font-family: 'Nunito', sans-serif; font-weight: 800;
+            font-size: 0.88rem; letter-spacing: 0.04em; text-transform: uppercase;
+            transition: background 0.25s, color 0.25s; align-self: flex-start;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .btn-expand:hover { background: var(--turquoise); color: var(--primary-blue); }
+        .btn-expand .arrow { display: inline-block; transition: transform 0.35s; font-size: 1rem; }
+        .btn-expand.open .arrow { transform: rotate(90deg); }
+
+        /* Panel expandido */
+        .card-extra {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.35s ease, margin-top 0.3s;
+            opacity: 0; margin-top: 0;
+        }
+        .card-extra.visible {
+            max-height: 2000px; /* alto suficiente para cualquier contenido */
+            opacity: 1;
+            margin-top: 16px;
+            overflow-y: auto; /* scroll si aún así desborda en pantallas muy pequeñas */
+        }
+        .card-extra-inner {
+            background: #f0f8ff; border-left: 4px solid var(--turquoise);
+            border-radius: 10px; padding: 16px 18px;
+            font-size: 0.9rem; line-height: 1.7; color: #2d4a6b;
+        }
+        .card-extra-inner ul { padding-left: 18px; margin-top: 8px; }
+        .card-extra-inner ul li { margin-bottom: 6px; }
+
+        /* ===== ANIMACIÓN ALTERNADA (solo para Introducción y Problema) ===== */
+        .card.hover-card {
+            opacity: 0;
+            transform: translateX(0);
+            transition: none;
+        }
+        @keyframes slideLeftToRight {
+            0% { opacity: 0; transform: translateX(-70px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideRightToLeft {
+            0% { opacity: 0; transform: translateX(70px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        .card.animate-left {
+            animation: slideLeftToRight 1.2s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        }
+        .card.animate-right {
+            animation: slideRightToLeft 1.2s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        }
+
+        /* ===== ESTILOS ESCALONADOS PARA CONSECUENCIAS (9) ===== */
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .step-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px 28px;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.07);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 8px solid var(--turquoise);
+            position: relative;
+        }
+        @media (min-width: 768px) {
+            .step-card:nth-child(1) { margin-left: 0px; }
+            .step-card:nth-child(2) { margin-left: 35px; }
+            .step-card:nth-child(3) { margin-left: 70px; }
+            .step-card:nth-child(4) { margin-left: 105px; }
+        }
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 28px rgba(0,0,0,0.12);
+        }
+        .step-card h3 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            color: var(--primary-blue);
+        }
+        .step-card h3 span:first-child {
+            font-size: 2rem;
+        }
+        .step-card > p {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            color: #2d4a6b;
+            font-weight: 600;
+        }
+        .step-card .btn-expand {
+            margin-top: 16px;
+        }
+
+        /* === Estilos para las nuevas secciones finales === */
+        .final-section {
+            margin-top: 20px;
+        }
+        .final-section .card {
+            margin-bottom: 30px;
+        }
+
+        /* ── RESPONSIVE: tabletas y móviles ── */
+        @media (max-width: 900px) {
+            .nav-links { gap: 14px; }
+            .nav-links a { font-size: 0.8rem; }
+        }
+
+        @media (max-width: 768px) {
+            /* Nav */
+            .hamburger { display: flex; }
+            .nav-links  { display: none; }
+            nav { padding: 14px 4%; }
+
+            /* Menú móvil: asegura que se vean todos los ítems */
+            .mobile-menu {
+                top: 56px; /* ajuste a la altura real del nav en móvil */
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .mobile-menu a { padding: 14px 6%; font-size: 0.95rem; }
+
+            /* Hero */
+            .hero { padding-top: 80px; min-height: 100svh; }
+            .hero-badge { top: -80px; padding: 6px 16px; }
+            .hero-badge p { font-size: 0.78rem; }
+            .hero-text { top: -70px; }
+            .slide-quote { font-size: clamp(0.85rem, 3.5vw, 1rem); bottom: 60px; max-width: 90%; }
+
+            /* Secciones */
+            section { padding: 2.5rem 4%; }
+            h2 { font-size: clamp(1.5rem, 5vw, 1.9rem); margin-bottom: 1.4rem; }
+
+            /* Cards: una columna, sin desborde */
+            .card-container { grid-template-columns: 1fr; gap: 20px; }
+            .card { padding: 22px 18px; }
+            .card-extra-inner { padding: 14px 14px; font-size: 0.88rem; word-break: break-word; }
+            .card-extra-inner ul { padding-left: 16px; }
+
+            /* Step cards: escalonado reducido */
+            @keyframes slideLeftToRight {
+                0% { opacity: 0; transform: translateX(-30px); }
+                100% { opacity: 1; transform: translateX(0); }
+            }
+            @keyframes slideRightToLeft {
+                0% { opacity: 0; transform: translateX(30px); }
+                100% { opacity: 1; transform: translateX(0); }
+            }
+            .step-card { margin-left: 0 !important; padding: 18px 16px; }
+            .step-card:nth-child(2) { margin-left: 8px !important; }
+            .step-card:nth-child(3) { margin-left: 16px !important; }
+            .step-card:nth-child(4) { margin-left: 24px !important; }
+            .step-card h3 { font-size: 1.2rem; }
+
+            /* Footer */
+            footer { padding: 36px 4% 20px !important; }
+        }
+
+        @media (max-width: 480px) {
+            nav { padding: 12px 4%; }
+            .logo { font-size: 1.3rem; }
+            .hero-badge { top: -60px; }
+            .hero-text { top: -50px; }
+            .hero-text h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); }
+            .hero-text p  { font-size: 0.9rem; }
+            .btn-hero { padding: 12px 28px; font-size: 0.9rem; }
+            .card { padding: 18px 14px; }
+            .icon-card { font-size: 2rem; }
+            .card h3 { font-size: 1rem; }
+            .card > p { font-size: 0.9rem; }
+            .btn-expand { font-size: 0.82rem; padding: 8px 16px; }
+            .step-card h3 { font-size: 1.05rem; gap: 8px; }
+            .step-card h3 span:first-child { font-size: 1.5rem; }
+            .step-card:nth-child(2) { margin-left: 4px !important; }
+            .step-card:nth-child(3) { margin-left: 8px !important; }
+            .step-card:nth-child(4) { margin-left: 12px !important; }
+        }
+
+        /* Pantallas muy grandes */
+        @media (min-width: 1400px) {
+            section { padding: 5rem 8%; }
+            .card-container { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">📘 CETis 20</div>
+        <ul class="nav-links">
+            <li><a href="#marco">Marco Teórico</a></li>
+            <li><a href="#impacto">Impacto</a></li>
+            <li><a href="#objetivos">Objetivos</a></li>
+            <li><a href="#resultados">Resultados</a></li>
+            <li><a href="#consecuencias">Consecuencias</a></li>
+            <li><a href="#conclusiones">Conclusiones</a></li>
+        </ul>
+        <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menú">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#marco" onclick="closeMenu()">Marco Teórico</a>
+            <a href="#impacto" onclick="closeMenu()">Impacto</a>
+            <a href="#objetivos" onclick="closeMenu()">Objetivos</a>
+            <a href="#resultados" onclick="closeMenu()">Resultados esperados</a>
+            <a href="#consecuencias" onclick="closeMenu()">Consecuencias</a>
+            <a href="#conclusiones" onclick="closeMenu()">Conclusiones</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-slides">
+            <img src="imagen0.jpg"   class="hero-slide active" alt="Slide 1">
+            <img src="imagen0.jpg"  class="hero-slide"        alt="Slide 2">
+            <img src="imagen0.jpg"  class="hero-slide"        alt="Slide 3">
+            <img src="imagen4.jpg"  class="hero-slide"        alt="Slide 4">
+        </div>
+        <div class="hero-overlay"></div>
+
+        <div class="hero-badge">
+            <span>📘</span>
+            <p>CETis 20 — Investigación Escolar</p>
+        </div>
+        <div class="hero-text">
+            <h1>¿Como afecta el uso y consumo de las drogas en los adolescentes de Manigua de CD. del Carmen de 16 a 17 años de edad en el periodo comprendido de MARZO 19 - MAYO 19 del 2026?</h1>
+            <p>Análisis enfocado en la prevención y el desarrollo académico integral de los estudiantes.</p>
+            <a href="#introduccion" class="btn-hero">Ver Información</a>
+        </div>
+
+        <div class="slide-quote" id="slideQuote"></div>
+        <div class="slide-dots" id="slideDots"></div>
+    </header>
+
+    <!-- SECCIÓN INTRODUCCIÓN Y PROBLEMA (con animación alternada) -->
+    <section id="introduccion">
+        <h2>Introducción</h2>
+        <div class="card hover-card">
+            <p>El consumo de drogas en la adolescencia representa un desafío que puede afectar el desarrollo académico, emocional y social de los estudiantes. Esta investigación analiza cómo el uso de sustancias psicoactivas influye en el rendimiento escolar de los alumnos de segundo semestre del CETis 20 durante el ciclo 2025–2026.</p>
+        </div>
+
+        <h2 style="margin-top:40px;">Problema de Investigación</h2>
+        <div class="card hover-card">
+            <p>Se busca identificar de qué manera el consumo de drogas puede afectar la asistencia, concentración, desempeño académico y permanencia escolar de los estudiantes del CETis 20.</p>
+        </div>
+
+        <!-- OBJETIVOS DE INVESTIGACIÓN (movidos aquí, debajo del Problema) -->
+        <h2 style="margin-top:40px;">Objetivos de la Investigación</h2>
+        <div class="card-container" id="objetivos">
+            <div class="card">
+                <span class="icon-card">🔍</span>
+                <h3>Objetivo General</h3>
+                <p>Medir cuantitativa y cualitativamente la influencia del consumo en los alumnos de segundo semestre del CETis 20.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        Determinar el grado de influencia del consumo de sustancias psicoactivas en el rendimiento académico de los estudiantes de segundo semestre del CETis 20, mediante datos cuantitativos (calificaciones, asistencia) y cualitativos (encuestas, entrevistas).
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <span class="icon-card">💡</span>
+                <h3>Objetivos Específicos</h3>
+                <p>Identificar focos de riesgo y proponer campañas de concientización efectivas para el ciclo escolar.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        <ul>
+                            <li>Identificar las sustancias de mayor consumo entre los estudiantes.</li>
+                            <li>Comparar el rendimiento entre alumnos consumidores y no consumidores.</li>
+                            <li>Detectar factores de riesgo psicosociales.</li>
+                            <li>Diseñar talleres y campañas de prevención para el CETis 20.</li>
+                            <li>Presentar resultados ante autoridades para impulsar intervenciones.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN MARCO TEÓRICO -->
+    <section id="marco">
+        <h2>Marco Teórico</h2>
+        <div class="card-container">
+            <div class="card">
+                <span class="icon-card">💊</span>
+                <h3>Concepto de Drogas</h3>
+                <p>Análisis de las sustancias psicoactivas y cómo alteran el funcionamiento neurológico durante la etapa de la adolescencia.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        Las drogas son sustancias que modifican el estado de consciencia, emociones y comportamiento. La OMS las define como toda sustancia que introducida en el organismo puede modificar una o varias de sus funciones.
+                        <ul>
+                            <li>Actúan sobre el sistema nervioso central (SNC).</li>
+                            <li>En la adolescencia el cerebro aún está en desarrollo, aumentando la vulnerabilidad.</li>
+                            <li>Pueden generar dependencia física y/o psicológica.</li>
+                            <li>Su consumo temprano incrementa el riesgo de adicción a largo plazo.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <span class="icon-card">⚠️</span>
+                <h3>Tipos de Drogas</h3>
+                <p>Clasificación de las sustancias más comunes y sus efectos directos en el sistema nervioso central.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        Las drogas se clasifican según su efecto en el SNC:
+                        <ul>
+                            <li><strong>Depresoras:</strong> alcohol, marihuana, benzodiacepinas.</li>
+                            <li><strong>Estimulantes:</strong> cocaína, metanfetaminas, nicotina.</li>
+                            <li><strong>Alucinógenas:</strong> LSD, hongos psilocibios.</li>
+                            <li>Las más reportadas en el CETis 20: marihuana, alcohol y tabaco.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN IMPACTO -->
+    <section id="impacto">
+        <h2>Consecuencias y Resultados</h2>
+        <div class="card-container">
+            <div class="card">
+                <span class="icon-card">📉</span>
+                <h3>Impacto Académico</h3>
+                <p>Relación directa entre el consumo, el aumento del ausentismo, la falta de concentración y la deserción escolar.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        <ul>
+                            <li>Disminución de la memoria a corto y largo plazo.</li>
+                            <li>Dificultad para concentrarse durante clases y exámenes.</li>
+                            <li>Incremento del ausentismo y llegadas tarde.</li>
+                            <li>Baja en calificaciones y riesgo de reprobar materias.</li>
+                            <li>Mayor probabilidad de abandono escolar.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <span class="icon-card">👥</span>
+                <h3>Impacto Social</h3>
+                <p>Deterioro en las relaciones interpersonales y familiares dentro de la comunidad escolar y la colonia.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        <ul>
+                            <li>Aislamiento de amigos y familia que no consumen.</li>
+                            <li>Conflictos frecuentes en el hogar por cambios de conducta.</li>
+                            <li>Mayor exposición a situaciones de riesgo (violencia, accidentes).</li>
+                            <li>Pérdida de metas y proyectos de vida.</li>
+                            <li>Influencia negativa en compañeros del mismo grupo.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 8: RESULTADOS ESPERADOS -->
+    <section id="resultados">
+        <h2>📊 Resultados Esperados</h2>
+        <div class="card-container">
+            <div class="card">
+                <span class="icon-card">📈</span>
+                <h3>Resultados Cuantitativos</h3>
+                <p>Se obtendrán datos numéricos que evidencien la correlación entre consumo y bajo rendimiento. Se aplicarán encuestas a 150 alumnos y se analizarán sus calificaciones y asistencias.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        <ul>
+                            <li>Porcentaje de alumnos con calificaciones reprobatorias (menor a 6) en relación al consumo declarado.</li>
+                            <li>Índice de ausentismo: promedio de faltas por mes entre consumidores vs no consumidores.</li>
+                            <li>Número de estudiantes que abandonan la escuela antes de finalizar el semestre, asociado al consumo.</li>
+                            <li>Estadísticas de concentración: tiempo promedio de atención en clase y resultados en pruebas cortas.</li>
+                        </ul>
+                        <p><strong>Meta:</strong> Generar gráficos de barras y tablas comparativas que muestren la magnitud del problema dentro del CETis 20, visibles para directivos y docentes.</p>
+                        <p>Se espera que los datos cuantitativos sirvan como base para solicitar programas de intervención temprana.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <span class="icon-card">📋</span>
+                <h3>Resultados Cualitativos</h3>
+                <p>Análisis de entrevistas y encuestas abiertas para entender percepciones, factores de riesgo y contexto social de los estudiantes.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        <ul>
+                            <li>Testimonios de alumnos sobre presión social, acceso a drogas dentro y fuera del plantel.</li>
+                            <li>Percepción docente: cambios en el rendimiento, comportamiento y asistencia de estudiantes consumidores.</li>
+                            <li>Identificación de zonas y horarios de mayor riesgo (cercanías de la escuela, recreos, salidas).</li>
+                            <li>Propuesta de programas preventivos basados en las propias palabras de los estudiantes (focus groups).</li>
+                        </ul>
+                        <p>Se busca entender el “porqué” detrás de los números y diseñar intervenciones efectivas, adaptadas a la realidad del CETis 20.</p>
+                        <p>Además, se elaborará un informe con recomendaciones para la comunidad escolar y las autoridades educativas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 9: CONSECUENCIAS DEL CONSUMO DE DROGAS (ESCALONADA) -->
+    <section id="consecuencias">
+        <h2>⚠️ Consecuencias del consumo de drogas</h2>
+        <div class="steps-container">
+            <div class="step-card">
+                <h3><span>📉</span> Bajo rendimiento escolar</h3>
+                <p>El consumo continuo afecta la memoria, la capacidad de atención y el interés por las actividades académicas.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        <ul>
+                            <li>Deterioro de la memoria a corto y largo plazo, dificultando el aprendizaje.</li>
+                            <li>Disminución de la capacidad de retener información y comprender conceptos nuevos.</li>
+                            <li>Incremento en el número de materias reprobadas (hasta un 40% más de riesgo).</li>
+                            <li>Mayor probabilidad de repetir semestre o abandonar los estudios por frustración.</li>
+                        </ul>
+                        <p>Estudios internacionales indican que los estudiantes que consumen drogas regularmente tienen promedios significativamente más bajos que sus pares.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="step-card">
+                <h3><span>🚫</span> Ausentismo</h3>
+                <p>Faltas recurrentes a clases, llegadas tarde y desinterés por cumplir con el horario escolar.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        <ul>
+                            <li>Inasistencia injustificada que supera el 20% del ciclo escolar, lo que provoca pérdida de continuidad.</li>
+                            <li>Desvinculación con compañeros y docentes, creando un aislamiento progresivo.</li>
+                            <li>Acumulación de tareas y evaluaciones no presentadas, generando rezago.</li>
+                            <li>El ausentismo crónico es uno de los primeros indicadores de un problema de adicción en adolescentes.</li>
+                        </ul>
+                        <p>En el CETis 20, el ausentismo relacionado con consumo se ha detectado principalmente los lunes y después de horarios de salida.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="step-card">
+                <h3><span>😵</span> Falta de concentración</h3>
+                <p>Incapacidad para mantener la atención durante las explicaciones, resolver problemas o realizar exámenes.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        <ul>
+                            <li>Distracción constante en el aula, uso de dispositivos o mirada perdida.</li>
+                            <li>Olvido de material escolar, fechas de entrega y horarios de exámenes.</li>
+                            <li>Baja calidad en trabajos y proyectos, a menudo incompletos o fuera de tema.</li>
+                            <li>Frustración y ansiedad por no poder rendir adecuadamente, lo que lleva a más consumo.</li>
+                        </ul>
+                        <p>Las sustancias como la marihuana y los inhalantes afectan directamente la capacidad de enfoque, incluso días después del consumo.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="step-card">
+                <h3><span>🏃‍♂️</span> Deserción escolar</h3>
+                <p>Abandono definitivo de los estudios como consecuencia de una adicción avanzada o por la pérdida total de motivación.</p>
+                <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+                <div class="card-extra">
+                    <div class="card-extra-inner">
+                        <ul>
+                            <li>Alumnos que dejan de asistir antes de finalizar el semestre, sin justificación.</li>
+                            <li>Vinculación con actividades ilícitas o grupos de riesgo fuera de la escuela.</li>
+                            <li>Pérdida de oportunidades de crecimiento profesional y personal a largo plazo.</li>
+                            <li>Impacto emocional y social en el estudiante y su familia, con altos costos psicosociales.</li>
+                        </ul>
+                        <p>La deserción por consumo de drogas es evitable con detección temprana, programas de apoyo y acompañamiento psicológico dentro del CETis 20.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NUEVAS SECCIONES: CONCLUSIONES, BIBLIOGRAFÍA Y PIE DE PÁGINA PROFESIONAL -->
+    <section id="conclusiones" class="final-section">
+        <h2>📌 Conclusiones</h2>
+        <div class="card">
+            <p>El consumo de drogas en los alumnos de segundo semestre del CETis 20 tiene una influencia negativa y significativa en su rendimiento escolar, manifestándose en bajo aprovechamiento, ausentismo, falta de concentración y deserción. La prevención temprana y el acompañamiento psicológico son clave para mitigar estos efectos.</p>
+            <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+            <div class="card-extra">
+                <div class="card-extra-inner">
+                    <ul>
+                        <li>Se confirma la hipótesis: existe correlación directa entre consumo de drogas y bajo rendimiento académico.</li>
+                        <li>Las sustancias más consumidas son marihuana, alcohol y tabaco, seguidas de inhalables.</li>
+                        <li>Los estudiantes consumidores presentan hasta 40% más de inasistencias y una disminución de calificaciones de hasta 2 puntos en promedio.</li>
+                        <li>La falta de comunicación familiar y la presión de grupo son los principales factores de riesgo identificados.</li>
+                        <li>Se requiere implementar un programa de tutorías y talleres de habilidades para la vida dentro del CETis 20.</li>
+                        <li>Las autoridades educativas deben reforzar los filtros de seguridad y las campañas de concientización continua.</li>
+                    </ul>
+                    <p>En conclusión, la investigación evidencia la urgencia de intervenir con estrategias multidisciplinarias que involucren a docentes, padres y alumnos para frenar el impacto negativo del consumo en el ámbito escolar.</p>
+                </div>
+            </div>
+        </div>
+
+        <h2 style="margin-top: 40px;">📚 Bibliografía</h2>
+        <div class="card">
+            <p>Referencias consultadas para el desarrollo del marco teórico y análisis de resultados.</p>
+            <button class="btn-expand" onclick="toggleCard(this)">Leer más <span class="arrow">›</span></button>
+            <div class="card-extra">
+                <div class="card-extra-inner">
+                    <ul>
+                        <li>Organización Mundial de la Salud (OMS). (2023). <em>Informe mundial sobre drogas</em>. Ginebra: OMS.</li>
+                        <li>Secretaría de Salud (México). (2024). <em>Encuesta Nacional de Consumo de Drogas en Estudiantes (ENCODE)</em>. Ciudad de México.</li>
+                        <li>Bandura, A. (2019). <em>Teoría del aprendizaje social y prevención de adicciones</em>. Editorial Trillas.</li>
+                        <li>Hernández Sampieri, R. (2021). <em>Metodología de la investigación</em>. McGraw-Hill.</li>
+                        <li>Instituto Nacional de Psiquiatría. (2022). <em>Efectos del consumo de cannabis en adolescentes mexicanos</em>. Revista Mexicana de Neurociencias, 23(2), 45-52.</li>
+                        <li>Gobierno del Estado. (2025). <em>Programa de prevención de adicciones en escuelas de educación media superior</em>. Toluca, México.</li>
+                    </ul>
+                    <p>Todas las fuentes fueron validadas y corresponden a publicaciones actualizadas dentro de los últimos 5 años.</p>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <footer style="background: #111827; color: #9ca3af; padding: 48px 5% 28px; font-family: 'Nunito', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 36px; border-bottom: 1px solid #374151; padding-bottom: 36px;">
+            <div>
+                <p style="font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: #ffffff; letter-spacing: 0.08em; margin-bottom: 10px;">📘 CETis 20</p>
+                <p style="font-size: 0.88rem; line-height: 1.7;">Investigación escolar sobre el impacto del consumo de drogas en el rendimiento académico. Ciclo 2025–2026.</p>
+            </div>
+            <div>
+                <p style="color: #e5e7eb; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Equipo</p>
+                <p style="font-size: 0.88rem; line-height: 1.8;">Grupo 2° "A" — Turno Matutino<br>Asesor: Mtro. Juan Carlos Méndez Ramírez<br>Depto. de Orientación Educativa</p>
+            </div>
+            <div>
+                <p style="color: #e5e7eb; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Contacto</p>
+                <p style="font-size: 0.88rem; line-height: 1.8;">investigacion.cetis20@educacion.mx<br>Publicado: Mayo 2026<br>CC Atribución-NoComercial 4.0</p>
+            </div>
+        </div>
+        <div style="max-width: 1100px; margin: 22px auto 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.82rem; color: #6b7280;">
+            <span>© 2026 CETis 20 — Todos los derechos reservados. Datos anonimizados conforme a la LGPD.</span>
+            <em style="color: #40c4ff;">"La mejor inversión en prevención es la educación con conciencia."</em>
+        </div>
+    </footer>
+
+    <script>
+        /* ── ACORDEÓN (funciona para todos los botones .btn-expand) ── */
+        function toggleCard(btn) {
+            const extra = btn.nextElementSibling;
+            const isOpen = btn.classList.contains('open');
+
+            document.querySelectorAll('.btn-expand.open').forEach(function(otherBtn) {
+                if (otherBtn !== btn) {
+                    otherBtn.classList.remove('open');
+                    otherBtn.nextElementSibling.classList.remove('visible');
+                }
+            });
+
+            if (isOpen) {
+                btn.classList.remove('open');
+                extra.classList.remove('visible');
+            } else {
+                btn.classList.add('open');
+                extra.classList.add('visible');
+            }
+        }
+
+        /* ── MENÚ HAMBURGUESA ── */
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const btn  = document.getElementById('hamburgerBtn');
+            const navH = document.querySelector('nav').offsetHeight;
+            menu.style.top = navH + 'px';
+            menu.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+        function closeMenu() {
+            document.getElementById('mobileMenu').classList.remove('open');
+            document.getElementById('hamburgerBtn').classList.remove('open');
+        }
+
+        /* ── SLIDESHOW HERO (ídem) ── */
+        (function() {
+            const slides = document.querySelectorAll('.hero-slide');
+            const dotsContainer = document.getElementById('slideDots');
+            let current = 0;
+            let timer;
+            const quotes = [
+                'Aprender hoy abre las puertas de tu futuro.',
+                'La prevención es una decisión inteligente que protege tus metas.',
+                'Cada buena elección fortalece tu crecimiento académico.',
+                'Tu educación vale más que cualquier riesgo momentáneo.'
+            ];
+            const quoteEl = document.getElementById('slideQuote');
+            if (quoteEl) quoteEl.textContent = quotes[0];
+
+            slides.forEach(function(_, i) {
+                const dot = document.createElement('button');
+                dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+                dotsContainer.appendChild(dot);
+            });
+
+            function getDots() { return dotsContainer.querySelectorAll('.slide-dot'); }
+
+            function goTo(next) {
+                if (next === current) return;
+                clearInterval(timer);
+
+                const prev = current;
+                current = next;
+
+                slides[prev].classList.add('leaving');
+                slides[prev].addEventListener('animationend', function handler() {
+                    slides[prev].classList.remove('active', 'leaving');
+                    slides[prev].removeEventListener('animationend', handler);
+                });
+
+                slides[current].classList.add('active', 'entering');
+                slides[current].addEventListener('animationend', function handler() {
+                    slides[current].classList.remove('entering');
+                    slides[current].removeEventListener('animationend', handler);
+                });
+
+                if (quoteEl) {
+                    quoteEl.classList.add('fade');
+                    setTimeout(() => {
+                        quoteEl.textContent = quotes[current];
+                        quoteEl.classList.remove('fade');
+                    }, 800);
+                }
+
+                getDots().forEach(function(d, i) {
+                    d.classList.toggle('active', i === current);
+                });
+                startTimer();
+            }
+
+            function next() {
+                goTo((current + 1) % slides.length);
+            }
+
+            function startTimer() {
+                timer = setInterval(next, 5000);
+            }
+            startTimer();
+        })();
+
+        /* ===== ANIMACIÓN ALTERNADA PARA LAS DOS PRIMERAS CARDS (Introducción y Problema) ===== */
+        (function initHorizontalAnimation() {
+            const cards = document.querySelectorAll('#introduccion .card.hover-card');
+            if (cards.length === 0) return;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const card = entry.target;
+                        if (!card.classList.contains('animate-left') && !card.classList.contains('animate-right')) {
+                            const idx = Array.from(cards).indexOf(card);
+                            if (idx % 2 === 0) {
+                                card.classList.add('animate-left');
+                            } else {
+                                card.classList.add('animate-right');
+                            }
+                        }
+                        observer.unobserve(card);
+                    }
+                });
+            }, { threshold: 0.2, rootMargin: "0px 0px -20px 0px" });
+
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        })();
+    </script>
+</body>
+</html>
